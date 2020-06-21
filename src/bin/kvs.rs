@@ -1,14 +1,20 @@
 use clap::{App, Arg, SubCommand};
 use std::env;
 use std::process::exit;
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "kvs")]
+struct Opt {}
 
 fn main() {
     exit(match run_app() {
-        _ => 1,
+        Err(code) => code,
+        _ => 0,
     })
 }
 
-fn run_app() -> Result<(), ()> {
+fn run_app() -> Result<(), i32> {
     let matches = App::new("kvs")
         .version(env::var_os("CARGO_PKG_VERSION").unwrap().to_str().unwrap())
         .author("Nick Calibey <nick.calibey@gmail.com>")
@@ -30,18 +36,20 @@ fn run_app() -> Result<(), ()> {
                 .arg(Arg::with_name("key").value_name("KEY").required(true)),
         )
         .get_matches();
-    println!("{:?}", matches);
     if let Some(_) = matches.subcommand_matches("get") {
         eprintln!("unimplemented");
-        return Err(());
+        return Err(1);
     }
     if let Some(_) = matches.subcommand_matches("set") {
         eprintln!("unimplemented");
-        return Err(());
+        return Err(1);
     }
     if let Some(_) = matches.subcommand_matches("rm") {
         eprintln!("unimplemented");
-        return Err(());
+        return Err(1);
+    }
+    if matches.args.len() == 0 {
+        return Err(1);
     }
     Ok(())
 }
